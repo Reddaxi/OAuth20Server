@@ -22,11 +22,11 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 var configServices = builder.Configuration;
-var connectionString = builder.Configuration.GetConnectionString("BaseDBConnection");
-builder.Services.AddDbContext<BaseDBContext>(op =>
-{
-    op.UseSqlServer(connectionString);
-});
+//var connectionString = builder.Configuration.GetConnectionString("BaseDBConnection");
+//builder.Services.AddDbContext<BaseDBContext>(op =>
+//{
+//    op.UseSqlServer(connectionString);
+//});
 
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
