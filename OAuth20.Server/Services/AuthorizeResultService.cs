@@ -240,7 +240,7 @@ namespace OAuth20.Server.Services
 
                 RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
 
-                string publicPrivateKey = File.ReadAllText("PublicPrivateKey.xml");
+                string publicPrivateKey = File.ReadAllText("PublicPrivateKey.xml"); //TODO
                 provider.FromXmlString(publicPrivateKey);
 
                 RsaSecurityKey rsaSecurityKey = new RsaSecurityKey(provider);

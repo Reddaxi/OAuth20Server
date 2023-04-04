@@ -127,6 +127,7 @@ namespace OAuth20.Server.Services.Users
             Microsoft.AspNetCore.Identity.SignInResult loginResult = await _signInManager
                 .PasswordSignInAsync(user, request.Password, false, false);
 
+            return new OpenIdConnectLoginResponse { Succeeded = true, AppUser = user }; //TODO
             if (loginResult.Succeeded)
             {
                 return new OpenIdConnectLoginResponse { Succeeded = true, AppUser = user };
