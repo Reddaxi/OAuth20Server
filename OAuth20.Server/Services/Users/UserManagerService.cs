@@ -8,6 +8,7 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using OAuth20.Server.Managers;
 using OAuth20.Server.Models.Entities;
 using OAuth20.Server.OauthRequest;
 using OAuth20.Server.OauthResponse;
@@ -18,11 +19,11 @@ namespace OAuth20.Server.Services.Users
 {
     public class UserManagerService : IUserManagerService
     {
-        private readonly UserManager<AppUser> _userManager;
+        private readonly AppUserManager _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ILogger<UserManagerService> _logger;
 
-        public UserManagerService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
+        public UserManagerService(AppUserManager userManager, SignInManager<AppUser> signInManager,
             ILogger<UserManagerService> logger)
         {
             _userManager = userManager;

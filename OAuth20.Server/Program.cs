@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OAuth20.Server.Configuration;
+using OAuth20.Server.Managers;
 using OAuth20.Server.Models.Context;
 using OAuth20.Server.Models.Entities;
 using OAuth20.Server.Services;
@@ -22,11 +23,11 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 var configServices = builder.Configuration;
-//var connectionString = builder.Configuration.GetConnectionString("BaseDBConnection");
-//builder.Services.AddDbContext<BaseDBContext>(op =>
-//{
-//    op.UseSqlServer(connectionString);
-//});
+var connectionString = builder.Configuration.GetConnectionString("BaseDBConnection");
+builder.Services.AddDbContext<BaseDBContext>(op =>
+{
+    op.UseSqlServer(connectionString);
+});
 
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -55,6 +56,7 @@ builder.Services.Configure<OAuthOptions>(configServices.GetSection("OAuthOptions
 builder.Services.AddScoped<IAuthorizeResultService, AuthorizeResultService>();
 builder.Services.AddSingleton<ICodeStoreService, CodeStoreService>();
 builder.Services.AddScoped<IUserManagerService, UserManagerService>();
+builder.Services.AddScoped<AppUserManager>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<RouteOptions>(options =>
