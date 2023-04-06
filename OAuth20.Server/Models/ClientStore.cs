@@ -16,6 +16,18 @@ namespace OAuth20.Server.Models
         {
             new Client
             {
+                ClientName = "DOS3 Umbraco",
+                ClientId = "dos3id",
+                ClientSecret = "dos3secret",
+                AllowedScopes = new[]{ "openid", "profile", "blazorWasmapi.readandwrite", "email" },
+                GrantType = GrantTypes.Code,
+                IsActive = true,
+                ClientUri = "https://localhost:44373",
+                RedirectUri = "https://localhost:44373/signin-oidc",
+                UsePkce = true,
+            },
+            new Client
+            {
                 ClientName = "TestProject",
                 ClientId = "platformnet6",
                 ClientSecret = "123456789",

@@ -9,11 +9,16 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
+using OAuth20.Server.Managers;
 using OAuth20.Server.Models.Entities;
 using OAuth20.Server.OauthRequest;
+using OAuth20.Server.OauthResponse;
 using OAuth20.Server.Services;
 using OAuth20.Server.Services.CodeServce;
 using OAuth20.Server.Services.Users;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace OAuth20.Server.Controllers
@@ -26,16 +31,18 @@ namespace OAuth20.Server.Controllers
         private readonly ICodeStoreService _codeStoreService;
         private readonly IUserManagerService _userManagerService;
         private readonly IUserClaimsPrincipalFactory<AppUser> _userClaimsPrincipalFactory;
+        private readonly AppUserManager _appUserManager;
 
         public HomeController(IHttpContextAccessor httpContextAccessor, IAuthorizeResultService authorizeResultService,
             ICodeStoreService codeStoreService, IUserManagerService userManagerService,
-            IUserClaimsPrincipalFactory<AppUser> userClaimsPrincipalFactory)
+            IUserClaimsPrincipalFactory<AppUser> userClaimsPrincipalFactory, AppUserManager appUserManager)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizeResultService = authorizeResultService;
             _codeStoreService = codeStoreService;
             _userManagerService = userManagerService;
-            _userClaimsPrincipalFactory= userClaimsPrincipalFactory;
+            _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
+            _appUserManager = appUserManager;
         }
 
         public IActionResult Index()
@@ -52,7 +59,7 @@ namespace OAuth20.Server.Controllers
 
             if (_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
             {
-                var updateCodeResult = _codeStoreService.UpdatedClientDataByCode(result.Code, 
+                var updateCodeResult = _codeStoreService.UpdatedClientDataByCode(result.Code,
                     _httpContextAccessor.HttpContext.User, result.RequestedScopes);
                 if (updateCodeResult != null)
                 {
@@ -80,6 +87,20 @@ namespace OAuth20.Server.Controllers
         {
             return View();
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> UserInfo()
+        {
+            string token = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+            var readToken = handler.ReadToken(token);
+
+            var a = await _appUserManager.FindByEmailAsync("dev@diviso.dk");
+            return Json(new UserInfoResponse(a.Id, a.Email, a.UserName, "pwd", "nonce", exp: 1680775668, iss: "https://localhost:7275", aud: "dos3id"));
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Login(OpenIdConnectLoginRequest loginRequest)

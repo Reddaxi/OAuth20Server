@@ -24,6 +24,7 @@ namespace OAuth20.Server.Controllers
                 token_endpoint = "https://localhost:7275/Home/Token",
                 token_endpoint_auth_methods_supported = new string[] { "client_secret_basic", "private_key_jwt" },
                 token_endpoint_auth_signing_alg_values_supported = new string[] { "RS256", "ES256" },
+                userinfo_endpoint = "https://localhost:7275/Home/UserInfo",
 
                 acr_values_supported = new string[] {"urn:mace:incommon:iap:silver", "urn:mace:incommon:iap:bronze"},
                 response_types_supported = new string[] { "code", "code id_token", "id_token", "token id_token" },

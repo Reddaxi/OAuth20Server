@@ -11,7 +11,7 @@ namespace OAuth20.Server.Managers
 {
     public class AppUserManager : UserManager<AppUser>
     {
-        private List<AppUser> AppUsers = new List<AppUser>() { new AppUser() { Id = Guid.NewGuid().ToString(), UserName = "mbj@diviso.dk", Email = "mbj@diviso.dk" } };
+        private List<AppUser> AppUsers = new List<AppUser>() { new AppUser() { Id = Guid.NewGuid().ToString(), UserName = "mbj@diviso.dk", Email = "mbj@diviso.dk" }, new AppUser() { Id = Guid.NewGuid().ToString(), UserName = "dev@diviso.dk", Email = "dev@diviso.dk" } };
 
 
         public AppUserManager(IUserStore<AppUser> store, IOptions<IdentityOptions> optionsAccessor, IPasswordHasher<AppUser> passwordHasher, IEnumerable<IUserValidator<AppUser>> userValidators, IEnumerable<IPasswordValidator<AppUser>> passwordValidators, ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<AppUser>> logger) : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
