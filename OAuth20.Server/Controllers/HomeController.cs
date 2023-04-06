@@ -19,6 +19,7 @@ using OAuth20.Server.Services.CodeServce;
 using OAuth20.Server.Services.Users;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OAuth20.Server.Controllers
@@ -94,10 +95,10 @@ namespace OAuth20.Server.Controllers
         {
             string token = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-            var readToken = handler.ReadToken(token);
-
-            var a = await _appUserManager.FindByEmailAsync("dev@diviso.dk");
-            return Json(new UserInfoResponse(a.Id, a.Email, a.UserName, "pwd", "nonce", exp: 1680775668, iss: "https://localhost:7275", aud: "dos3id"));
+            var readToken = handler.ReadJwtToken(token);
+           string email = readToken.Claims.FirstOrDefault(x=>x.Type == "email").Value;
+            var a = await _appUserManager.FindByEmailAsync(email);
+            return Json(new UserInfoResponse(a.Id, a.Email, a.UserName));
         }
 
 

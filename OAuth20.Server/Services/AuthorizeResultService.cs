@@ -219,6 +219,8 @@ namespace OAuth20.Server.Services
             }
 
             // Now here I will Issue the Id_token
+            var userId = clientCodeChecker.Subject.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var userEmail = clientCodeChecker.Subject.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
 
             string id_token = string.Empty;
             if (clientCodeChecker.IsOpenId)
@@ -228,8 +230,6 @@ namespace OAuth20.Server.Services
                     return new TokenResponse { Error = ErrorTypeEnum.InvalidGrant.GetEnumDescription() };
 
                 var currentUserName = clientCodeChecker.Subject.Identity.Name;
-
-                var userId = clientCodeChecker.Subject.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
                 if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(currentUserName))
                     return new TokenResponse { Error = ErrorTypeEnum.InvalidGrant.GetEnumDescription() };
@@ -244,13 +244,15 @@ namespace OAuth20.Server.Services
                 provider.FromXmlString(publicPrivateKey);
 
                 RsaSecurityKey rsaSecurityKey = new RsaSecurityKey(provider);
-
+                
                 var claims = new List<Claim>()
                     {
                         new Claim("sub", userId),
                         new Claim("given_name", currentUserName),
                         new Claim("iat", iat.ToString(), ClaimValueTypes.Integer), // time stamp
-                        new Claim("nonce", clientCodeChecker.Nonce)
+                        new Claim("nonce", clientCodeChecker.Nonce),
+                        new Claim("email", userEmail),
+                        new Claim(ClaimsIdentity.DefaultNameClaimType, currentUserName),
                     };
                 foreach (var amr in amrs)
                     claims.Add(new Claim("amr", amr));// authentication
@@ -283,7 +285,7 @@ namespace OAuth20.Server.Services
                                          where !OAuth2ServerHelpers.OpenIdConnectScopes.Contains(m)
                                          select m;
 
-            var accessTokenResult = generateJWTTokne(scopesinJWtAccessToken, Constants.TokenTypes.JWTAcceseccToken, checkClientResult.Client);
+            var accessTokenResult = generateJWTToken(scopesinJWtAccessToken, Constants.TokenTypes.JWTAcceseccToken, checkClientResult.Client, userId, userEmail);
 
 
             var atoken = new OAuthTokenEntity
@@ -339,7 +341,7 @@ namespace OAuth20.Server.Services
         }
 
 
-        public TokenResult generateJWTTokne(IEnumerable<string> scopes, string tokenType, Client client)
+        public TokenResult generateJWTToken(IEnumerable<string> scopes, string tokenType, Client client, string userID, string userEmail)
         {
             var result = new TokenResult();
 
@@ -348,6 +350,9 @@ namespace OAuth20.Server.Services
                 var claims_at = new List<Claim>();
                 foreach (var item in scopes)
                     claims_at.Add(new Claim("scope", item));
+
+                claims_at.Add(new Claim("sub", userID));
+                claims_at.Add(new Claim("email", userEmail));
 
                 RSACryptoServiceProvider provider1 = new RSACryptoServiceProvider();
 
